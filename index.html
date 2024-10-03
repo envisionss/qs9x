@@ -15,6 +15,7 @@
             position: relative;
             overflow: hidden;
             background-color: rgb(23, 23, 23); /* Background color */
+            user-select: none; /* Disable text selection */
         }
         #overlay {
             position: fixed; /* Fixed to cover the entire screen */
@@ -97,6 +98,37 @@
         #roblox-image:hover {
             transform: scale(1.1); /* Scale up slightly on hover */
         }
+        #volume-slider {
+            display: none; /* Initially hidden */
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.7s; /* Fade-in transition */
+            position: absolute; /* Positioned at the top left corner */
+            top: 20px; /* Distance from the top */
+            left: 20px; /* Distance from the left */
+            width: 200px; /* Width of the slider container */
+        }
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 8px; /* Height of the slider track */
+            background: rgba(255, 255, 255, 0.3); /* Track color */
+            border-radius: 5px; /* Rounded corners */
+            overflow: hidden; /* Ensure the thumb is contained */
+        }
+        .slider-thumb {
+            position: absolute;
+            top: -6px; /* Center the thumb vertically */
+            width: 25px; /* Width of the thumb */
+            height: 25px; /* Height of the thumb */
+            background: #f00; /* Thumb color */
+            border-radius: 50%; /* Circular thumb */
+            cursor: pointer; /* Pointer cursor on hover */
+            transform: translateX(-50%); /* Center the thumb on the track */
+            transition: background 0.3s; /* Transition for hover effect */
+        }
+        .slider-thumb:hover {
+            background: #ff5e5e; /* Change color on hover */
+        }
     </style>
 </head>
 <body>
@@ -110,9 +142,20 @@
         <div id="subtext">nutting in daddy isa</div> <!-- Smaller bold text below qs9x -->
     </div>
     <img id="roblox-image" src="roblox.png" alt="Roblox Image" onclick="window.open('https://www.roblox.com/users/2372728401/profile', '_blank')"> <!-- Roblox image below the box -->
+    
+    <div id="volume-slider">
+        <div class="slider-container">
+            <div class="slider-thumb" id="slider-thumb"></div>
+        </div>
+    </div>
+    
     <audio id="audio" src="erm.mp3" preload="auto"></audio>
 
     <script>
+        const audio = document.getElementById('audio');
+        const sliderThumb = document.getElementById('slider-thumb');
+        const sliderContainer = document.querySelector('.slider-container');
+        
         function startBackground() {
             document.getElementById('overlay').style.display = 'none'; // Hide the overlay
             document.getElementById('background').style.display = 'block'; // Show the background
@@ -141,8 +184,53 @@
                 document.getElementById('roblox-image').style.opacity = '1'; // Set opacity to 1 to fade in
             }, 200); // Longer delay for Roblox image
 
-            document.getElementById('audio').play(); // Play the audio
+            setTimeout(() => {
+                document.getElementById('volume-slider').style.display = 'block'; // Show the volume slider
+                document.getElementById('volume-slider').style.opacity = '1'; // Set opacity to 1 to fade in
+            }, 250); // Delay for the volume slider
+
+            audio.play(); // Play the audio
+            audio.volume = 0.3; // Set initial volume to 30%
+            updateSliderPosition(); // Initialize the slider position
         }
+
+        function changeVolume(newVolume) {
+            audio.volume = newVolume; // Update audio volume
+            updateSliderPosition(); // Update slider position
+        }
+
+        function updateSliderPosition() {
+            const sliderValue = audio.volume;
+            const thumb = document.getElementById('slider-thumb');
+            const containerWidth = sliderContainer.clientWidth;
+            const thumbWidth = thumb.clientWidth;
+            const newPosition = sliderValue * (containerWidth - thumbWidth / 2); // Calculate new position
+            thumb.style.left = newPosition + 'px'; // Update thumb position
+        }
+
+        // Event listeners for dragging the slider
+        sliderThumb.addEventListener('mousedown', function(e) {
+            e.preventDefault(); // Prevent text selection
+            const containerRect = sliderContainer.getBoundingClientRect();
+            const handleMouseMove = (event) => {
+                let offsetX = event.clientX - containerRect.left;
+                offsetX = Math.max(0, Math.min(offsetX, containerRect.width)); // Constrain within bounds
+                const newVolume = offsetX / containerRect.width;
+                changeVolume(newVolume);
+            };
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+            }, { once: true });
+        });
+
+        // Handle clicks on the container to adjust volume
+        sliderContainer.addEventListener('click', (event) => {
+            const offsetX = event.clientX - sliderContainer.getBoundingClientRect().left;
+            const newVolume = Math.max(0, Math.min(offsetX / sliderContainer.clientWidth, 1)); // Constrain to [0, 1]
+            changeVolume(newVolume);
+        });
     </script>
 </body>
 </html>
