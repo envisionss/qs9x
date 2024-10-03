@@ -149,7 +149,7 @@
         </div>
     </div>
     
-    <audio id="audio" src="erm.mp3" preload="auto"></audio>
+    <audio id="audio" src="erm.mp3" preload="auto" loop></audio>
 
     <script>
         const audio = document.getElementById('audio');
@@ -190,47 +190,4 @@
             }, 250); // Delay for the volume slider
 
             audio.play(); // Play the audio
-            audio.volume = 0.3; // Set initial volume to 30%
-            updateSliderPosition(); // Initialize the slider position
-        }
-
-        function changeVolume(newVolume) {
-            audio.volume = newVolume; // Update audio volume
-            updateSliderPosition(); // Update slider position
-        }
-
-        function updateSliderPosition() {
-            const sliderValue = audio.volume;
-            const thumb = document.getElementById('slider-thumb');
-            const containerWidth = sliderContainer.clientWidth;
-            const thumbWidth = thumb.clientWidth;
-            const newPosition = sliderValue * (containerWidth - thumbWidth / 2); // Calculate new position
-            thumb.style.left = newPosition + 'px'; // Update thumb position
-        }
-
-        // Event listeners for dragging the slider
-        sliderThumb.addEventListener('mousedown', function(e) {
-            e.preventDefault(); // Prevent text selection
-            const containerRect = sliderContainer.getBoundingClientRect();
-            const handleMouseMove = (event) => {
-                let offsetX = event.clientX - containerRect.left;
-                offsetX = Math.max(0, Math.min(offsetX, containerRect.width)); // Constrain within bounds
-                const newVolume = offsetX / containerRect.width;
-                changeVolume(newVolume);
-            };
-
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', () => {
-                document.removeEventListener('mousemove', handleMouseMove);
-            }, { once: true });
-        });
-
-        // Handle clicks on the container to adjust volume
-        sliderContainer.addEventListener('click', (event) => {
-            const offsetX = event.clientX - sliderContainer.getBoundingClientRect().left;
-            const newVolume = Math.max(0, Math.min(offsetX / sliderContainer.clientWidth, 1)); // Constrain to [0, 1]
-            changeVolume(newVolume);
-        });
-    </script>
-</body>
-</html>
+            audio.volume = 0.3; // Set
