@@ -16,6 +16,7 @@
             overflow: hidden;
             background-color: rgb(23, 23, 23); /* Background color */
             user-select: none; /* Disable text selection */
+            cursor: url('cursor.cur'), auto; /* Custom cursor */
         }
         #overlay {
             position: fixed; /* Fixed to cover the entire screen */
@@ -57,6 +58,7 @@
             align-items: center;
             backdrop-filter: blur(10px); /* Add blur effect */
             z-index: 5; /* Ensure it is above the background but below the overlay */
+            position: relative; /* Needed for absolute positioning of roblox-image */
         }
         #blood-image {
             display: none; /* Initially hidden */
@@ -84,16 +86,14 @@
             margin-top: 5px; /* Space above the subtext */
         }
         #roblox-image {
-            display: none; /* Initially hidden */
-            opacity: 0; /* Start hidden */
-            transition: opacity 0.7s, transform 0.2s; /* Fade-in and transform transition */
-            margin-top: 303px; /* Space to move it further down */
+            position: absolute; /* Position relative to the box */
+            bottom: 10px; /* Distance from the bottom */
+            left: 10px; /* Distance from the left */
             width: 40px; /* Adjusted size of the Roblox image */
             height: auto; /* Maintain aspect ratio */
-            position: absolute; /* Positioned below the box */
-            left: 50%; /* Center horizontally */
-            transform: translateX(-50%); /* Adjust for centering */
-            z-index: 4; /* Ensure it's below the box but above the background */
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.7s; /* Fade-in transition */
+            z-index: 4; /* Ensure it's above the box background */
         }
         #volume-slider {
             display: none; /* Initially hidden */
@@ -139,9 +139,9 @@
     <div id="box">
         <img id="blood-image" src="blood.jpg" alt="Blood Image"> <!-- Circular image -->
         <div id="text">qs9x</div> <!-- Bold text below the image -->
-        <div id="subtext">nothing matters anymore</div> <!-- Smaller bold text below qs9x -->
+        <div id="subtext">"nothing matters anymore"</div> <!-- Smaller bold text below qs9x -->
+        <img id="roblox-image" src="roblox.png" alt="Roblox Image" onclick="window.open('https://www.roblox.com/users/2372728401/profile', '_blank')"> <!-- Roblox image below the box -->
     </div>
-    <img id="roblox-image" src="roblox.png" alt="Roblox Image" onclick="window.open('https://www.roblox.com/users/2372728401/profile', '_blank')"> <!-- Roblox image below the box -->
     
     <div id="volume-slider">
         <div class="slider-container">
