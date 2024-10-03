@@ -35,13 +35,13 @@
         }
         #background {
             display: none; /* Initially hidden */
-            background: url('background.mp4') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
-            width: 100vw;
             position: absolute; /* Positioned behind the overlay */
             top: 0;
             left: 0;
+            width: 100vw; /* Full width */
+            height: 100vh; /* Full height */
+            object-fit: cover; /* Cover the entire area */
+            z-index: 0; /* Ensure it is at the back */
         }
         #box {
             opacity: 0; /* Start hidden */
@@ -132,7 +132,10 @@
     <div id="overlay" onclick="startBackground()">
         Click Me
     </div>
-    <div id="background"></div>
+    <video id="background" autoplay muted loop style="display: none;">
+        <source src="background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
     <div id="box">
         <img id="blood-image" src="blood.jpg" alt="Blood Image"> <!-- Circular image -->
         <div id="text">qs9x</div> <!-- Bold text below the image -->
@@ -187,17 +190,46 @@
             }, 250); // Delay for the volume slider
 
             audio.play(); // Play the audio
-            audio.volume = 0.3; // Set initial volume
+            audio.volume = 0.3; // Set initial volume to 30%
+            updateSliderPosition(); // Initialize the slider position
         }
 
-        // Volume slider functionality
-        sliderContainer.addEventListener('click', (e) => {
-            const rect = sliderContainer.getBoundingClientRect();
-            const offsetX = e.clientX - rect.left; // Get click position relative to the container
-            const percentage = Math.min(Math.max(offsetX / sliderContainer.clientWidth, 0), 1); // Clamp value between 0 and 1
-            const volume = percentage; // Set volume based on percentage
-            audio.volume = volume; // Set audio volume
-            sliderThumb.style.left = `${percentage * 100}%`; // Move the thumb
+        function changeVolume(newVolume) {
+            audio.volume = newVolume; // Update audio volume
+            updateSliderPosition(); // Update slider position
+        }
+
+        function updateSliderPosition() {
+            const sliderValue = audio.volume;
+            const thumb = document.getElementById('slider-thumb');
+            const containerWidth = sliderContainer.clientWidth;
+            const thumbWidth = thumb.clientWidth;
+            const newPosition = sliderValue * (containerWidth - thumbWidth / 2); // Calculate new position
+            thumb.style.left = newPosition + 'px'; // Update thumb position
+        }
+
+        // Event listeners for dragging the slider
+        sliderThumb.addEventListener('mousedown', function(e) {
+            e.preventDefault(); // Prevent text selection
+            const containerRect = sliderContainer.getBoundingClientRect();
+            const handleMouseMove = (event) => {
+                let offsetX = event.clientX - containerRect.left;
+                offsetX = Math.max(0, Math.min(offsetX, containerRect.width)); // Constrain within bounds
+                const newVolume = offsetX / containerRect.width;
+                changeVolume(newVolume);
+            };
+
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+            }, { once: true });
+        });
+
+        // Handle clicks on the container to adjust volume
+        sliderContainer.addEventListener('click', (event) => {
+            const offsetX = event.clientX - sliderContainer.getBoundingClientRect().left;
+            const newVolume = Math.max(0, Math.min(offsetX / sliderContainer.clientWidth, 1)); // Constrain to [0, 1]
+            changeVolume(newVolume);
         });
     </script>
 </body>
