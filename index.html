@@ -95,9 +95,6 @@
             transform: translateX(-50%); /* Adjust for centering */
             z-index: 4; /* Ensure it's below the box but above the background */
         }
-        #roblox-image:hover {
-            transform: scale(1.1); /* Scale up slightly on hover */
-        }
         #volume-slider {
             display: none; /* Initially hidden */
             opacity: 0; /* Start hidden */
@@ -190,4 +187,18 @@
             }, 250); // Delay for the volume slider
 
             audio.play(); // Play the audio
-            audio.volume = 0.3; // Set
+            audio.volume = 0.3; // Set initial volume
+        }
+
+        // Volume slider functionality
+        sliderContainer.addEventListener('click', (e) => {
+            const rect = sliderContainer.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left; // Get click position relative to the container
+            const percentage = Math.min(Math.max(offsetX / sliderContainer.clientWidth, 0), 1); // Clamp value between 0 and 1
+            const volume = percentage; // Set volume based on percentage
+            audio.volume = volume; // Set audio volume
+            sliderThumb.style.left = `${percentage * 100}%`; // Move the thumb
+        });
+    </script>
+</body>
+</html>
